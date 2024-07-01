@@ -1,0 +1,47 @@
+#![allow(non_snake_case)]
+
+use chrono::{DateTime, Local, Utc};
+use dioxus::prelude::*;
+use serde::{self, Deserialize, Serialize};
+use tracing::Level;
+
+fn main() {
+    // Init logger
+    dioxus::launch(App);
+    dioxus_logger::init(Level::INFO).expect("failed to init logger");
+}
+
+#[derive(Serialize, Deserialize)]
+struct TeaData {
+    #[serde(with = "chrono::serde::ts_seconds")]
+    date_time: chrono::DateTime<Utc>,
+    tea_type: String,
+    score: i8,
+    milk: bool,
+    sugar: bool,
+}
+
+const TEA_TYPE_PLACEHOLDER: &str = "Tea Type";
+
+#[component]
+fn App() -> Element {
+    rsx! {
+        div {
+            input { r#type: "text", placeholder: "{TEA_TYPE_PLACEHOLDER}"}
+            ul {
+                input { r#type: "checkbox" }
+                input { r#type: "checkbox" }
+            }
+            ul {
+                input {r#type: "radio"}
+                input {r#type: "radio"}
+                input {r#type: "radio"}
+                input {r#type: "radio"}
+                input {r#type: "radio"}
+            }
+            button {
+                "Post Data"
+            }
+        }
+    }
+}
