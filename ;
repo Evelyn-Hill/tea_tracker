@@ -17,8 +17,8 @@ fn main() {
 struct TeaData {
     #[serde(with = "chrono::serde::ts_seconds")]
     date_time: chrono::DateTime<Utc>,
-    score: i8,
     tea_type: String,
+    score: i8,
     milk: bool,
     sugar: bool,
 }
@@ -48,17 +48,15 @@ fn App() -> Element {
 //TODO: Make this pretty.
 #[component]
 fn tea_input_form() -> Element {
-    let mut tea_type = use_signal(|| "".to_string());
+    let mut tea_type = use_signal(|| "Tea Type".to_string());
     let mut sugar = use_signal(|| false);
     let mut milk = use_signal(|| false);
-    let mut score = use_signal(|| 0);
+    let mut score = use_signal(|| String::from("1"));
 
     rsx! {
         div {
             form { onsubmit: move |event| {
-                let td = TeaData::new(tea_type.read().to_string(), *score.read(), *milk.read(), *sugar.read());
-                println!("{}, {:?}, {:?}, {:?}", td.tea_type, td.score, td.milk, td.sugar);
-                // Tea data is being set, now to decide on how we will store it in database.
+                let td = TeaData::new(String::from("{tea_type}"), score.parse().unwrap(), milk.unwrap(), sugar.unwrap());
             },
                 input { r#type: "text", placeholder: "{TEA_TYPE_PLACEHOLDER}", required: true, oninput: move |event| tea_type.set(event.value())},
                     div {
@@ -69,9 +67,9 @@ fn tea_input_form() -> Element {
                     div {
                         input { r#type: "checkbox", oninput: move |event| sugar.set(event.checked())}
                         "Sugar?"
-                },
                     }
-                select { oninput: move |event| score.set(event.value().parse().unwrap()),
+                },
+                select { oninput: move |event| score.set(event.value()),
                     option {"1"}
                     option {"2"}
                     option {"3"}
